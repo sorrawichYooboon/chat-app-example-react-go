@@ -1,0 +1,59 @@
+# Node.js / React
+node_modules/
+build/
+dist/
+.cache/
+*.log
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.DS_Store
+
+# React Testing
+coverage/
+jest-cache/
+jest-config/
+
+# Go
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+
+# Compiled Object files
+*.o
+*.a
+
+# Build directories
+bin/
+vendor/
+
+# Go Modules
+go.sum
+go.work
+go.work.sum
+
+# Temporary files
+*.tmp
+*.log
+*.test
+*.prof
+
+# IDE/Editor Specific
+.vscode/
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Linux
+*.swp
+.swo
+
+# Windows
+Thumbs.db
