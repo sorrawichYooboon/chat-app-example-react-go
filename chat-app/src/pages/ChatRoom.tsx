@@ -2,11 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSocket } from "../context/SocketContext";
 import { LOCAL_STORAGE_KEYS, DEFAULTS } from "../utils/constants";
 
-interface Message {
-  userName: string;
-  text: string;
-}
-
 const ChatRoom: React.FC = () => {
   const { socket, connectSocket, disconnectSocket } = useSocket();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -40,9 +35,12 @@ const ChatRoom: React.FC = () => {
 
   const sendMessage = () => {
     if (socket && newMessage) {
-      // Only send the text value to the backend
-      socket.send(newMessage);
-      setNewMessage("");
+      const message = {
+        type: "chat",
+        payload: newMessage,
+      };
+
+      socket.send(JSON.stringify(message));
     }
   };
 
@@ -52,11 +50,17 @@ const ChatRoom: React.FC = () => {
     <div className="chat-container">
       <h1>Room: {roomName}</h1>
       <div className="messages">
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.userName}:</strong> {msg.text}
-          </div>
-        ))}
+        {messages.map((msg, index) => {
+          if (msg.type === "chat" && msg.payload) {
+            const { userName, text } = msg.payload;
+            return (
+              <div key={index}>
+                <strong>{userName}:</strong> {text}
+              </div>
+            );
+          }
+          return null;
+        })}
       </div>
       <div className="input-container">
         <input

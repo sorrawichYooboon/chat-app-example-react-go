@@ -8,6 +8,7 @@ A real-time chat application built with React (frontend) and Go (backend). This 
 - **Room-Based Chat**: Users can join specific rooms with unique names.
 - **Frontend**: React-based UI with WebSocket connection management.
 - **Backend**: Go server using Echo framework and Gorilla WebSocket library for WebSocket handling.
+- **Structured Messaging**: Messages follow a clear `type` and `payload` schema for extensibility and maintainability.
 
 ## **Technologies Used**
 
@@ -114,7 +115,7 @@ A real-time chat application built with React (frontend) and Go (backend). This 
 
 3. **Message Exchange**:
 
-   - The frontend sends plain text messages to the backend.
+   - The frontend sends messages with a type (chat) and a payload (the message content).
    - The backend wraps the message with the sender’s username and broadcasts it to all clients in the same room.
 
 4. **Leaving a Room**:

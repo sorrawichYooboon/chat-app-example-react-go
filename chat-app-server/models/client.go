@@ -7,7 +7,18 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const (
+	TypeJoin  = "join"
+	TypeLeave = "leave"
+	TypeChat  = "chat"
+)
+
 type Message struct {
+	Type    string      `json:"type"`
+	Payload interface{} `json:"payload"`
+}
+
+type ChatPayload struct {
 	UserName string `json:"userName"`
 	Text     string `json:"text"`
 }
@@ -39,24 +50,45 @@ func (c *Client) ReadMessages() {
 	}()
 
 	for {
-		_, msg, err := c.Conn.ReadMessage()
+		_, rawMsg, err := c.Conn.ReadMessage()
 		if err != nil {
 			log.Printf("Error reading message: %v", err)
 			break
 		}
 
-		message := Message{
-			UserName: c.UserName,
-			Text:     string(msg),
-		}
-
-		messageJSON, err := json.Marshal(message)
-		if err != nil {
-			log.Printf("Error serializing message: %v", err)
+		var message Message
+		if err := json.Unmarshal(rawMsg, &message); err != nil {
+			log.Printf("Error parsing message: %v", err)
 			continue
 		}
 
-		c.Room.Broadcast <- messageJSON
+		switch message.Type {
+		case TypeChat:
+			payload := ChatPayload{
+				UserName: c.UserName,
+				Text:     message.Payload.(string),
+			}
+			message := Message{
+				Type:    TypeChat,
+				Payload: payload,
+			}
+			messageJSON, err := json.Marshal(message)
+			if err != nil {
+				log.Printf("Error serializing chat message: %v", err)
+				continue
+			}
+			c.Room.Broadcast <- messageJSON
+
+		case TypeJoin:
+			log.Printf("%s joined room %s", c.UserName, c.Room.Name)
+
+		case TypeLeave:
+			log.Printf("%s left room %s", c.UserName, c.Room.Name)
+			return
+
+		default:
+			log.Printf("Unknown message type: %s", message.Type)
+		}
 	}
 }
 

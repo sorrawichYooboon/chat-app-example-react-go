@@ -1,4 +1,7 @@
-export interface Message {
-  userName: string;
-  text: string;
+interface Message {
+  type: string;
+  payload: {
+    userName: string;
+    text: string;
+  };
 }
